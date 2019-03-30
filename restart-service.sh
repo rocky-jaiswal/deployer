@@ -1,0 +1,11 @@
+#!/bin/bash
+
+SERVICE_NAME=$1
+IMAGE_PATH=$2
+
+IMAGE_NAME+="${SERVICE_NAME^^}_ID"
+NEW_IMAGE_VERSION=$(echo $IMAGE_PATH | awk -F ":" '{print $2}')
+
+echo $SERVICE_NAME
+echo $IMAGE_NAME
+echo $NEW_IMAGE_VERSION
