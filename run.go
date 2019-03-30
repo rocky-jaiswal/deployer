@@ -1,17 +1,17 @@
 package main
 
-import(
-		"encoding/json"
-    "fmt"
-		"net/http"
-		"os"
-		"os/exec"
-    "github.com/goji/httpauth"
+import (
+	"encoding/json"
+	"fmt"
+	"github.com/goji/httpauth"
+	"net/http"
+	"os"
+	"os/exec"
 )
 
 type Message struct {
 	ServiceName string `json:"service-name"`
-	ImagePath string `json:"image-path"`
+	ImagePath   string `json:"image-path"`
 }
 
 func runCmd(t *Message) string {
@@ -25,7 +25,7 @@ func runCmd(t *Message) string {
 	stdout, err := cmd.Output()
 
 	if err != nil {
-			return string(err.Error())
+		return string(err.Error())
 	}
 
 	return string(stdout)
@@ -36,23 +36,22 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func MainHandler(w http.ResponseWriter, req *http.Request) {
-		if req.Method == "POST" {
-				decoder := json.NewDecoder(req.Body)
-				var t Message
-				err := decoder.Decode(&t)
-				if err != nil {
-						http.Error(w, "Invalid request", http.StatusBadRequest)
-				} else {
-						fmt.Fprintf(w, runCmd(&t))
-				}
+	if req.Method == "POST" {
+		decoder := json.NewDecoder(req.Body)
+		var t Message
+		err := decoder.Decode(&t)
+		if err != nil {
+			http.Error(w, "Invalid request", http.StatusBadRequest)
 		} else {
-				http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+			fmt.Fprintf(w, runCmd(&t))
 		}
+	} else {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+	}
 }
 
 func main() {
-		http.Handle("/__deployer/health", httpauth.SimpleBasicAuth(os.Getenv("DEPLOYER_USER"), os.Getenv("DEPLOYER_PASSWORD"))(http.HandlerFunc(HealthHandler)))
-    http.Handle("/__deployer/deploy", httpauth.SimpleBasicAuth(os.Getenv("DEPLOYER_USER"), os.Getenv("DEPLOYER_PASSWORD"))(http.HandlerFunc(MainHandler)))
-    http.ListenAndServe(":7000", nil)
+	http.Handle("/__deployer/health", httpauth.SimpleBasicAuth(os.Getenv("DEPLOYER_USER"), os.Getenv("DEPLOYER_PASSWORD"))(http.HandlerFunc(HealthHandler)))
+	http.Handle("/__deployer/deploy", httpauth.SimpleBasicAuth(os.Getenv("DEPLOYER_USER"), os.Getenv("DEPLOYER_PASSWORD"))(http.HandlerFunc(MainHandler)))
+	http.ListenAndServe(":7000", nil)
 }
-
