@@ -37,16 +37,16 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 
 func MainHandler(w http.ResponseWriter, req *http.Request) {
 		if req.Method == "POST" {
-			decoder := json.NewDecoder(req.Body)
-			var t Message
-			err := decoder.Decode(&t)
-			if err != nil {
-				http.Error(w, "Invalid request", http.StatusBadRequest)
-			} else {
-				fmt.Fprintf(w, runCmd(&t))
-			}
+				decoder := json.NewDecoder(req.Body)
+				var t Message
+				err := decoder.Decode(&t)
+				if err != nil {
+						http.Error(w, "Invalid request", http.StatusBadRequest)
+				} else {
+						fmt.Fprintf(w, runCmd(&t))
+				}
 		} else {
-			http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+				http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		}
 }
 
